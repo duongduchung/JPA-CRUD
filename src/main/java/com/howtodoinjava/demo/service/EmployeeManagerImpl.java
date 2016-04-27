@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.howtodoinjava.demo.dao.EmployeeDao;
+import com.howtodoinjava.demo.dao.EmployeeJPARepository;
 import com.howtodoinjava.demo.model.EmployeeEntity;
 
 
@@ -13,11 +13,15 @@ import com.howtodoinjava.demo.model.EmployeeEntity;
 @Service
 public class EmployeeManagerImpl implements EmployeeManager {
  
-    @Autowired
+   /* @Autowired
     EmployeeDao dao;
-     
+*/  
+	@Autowired
+	EmployeeJPARepository employeeJPARepository;
+	
     public List<EmployeeEntity> getAllEmployees() {
-        return dao.getAllEmployees();
+      
+    	return employeeJPARepository.findAll();
     }
  
    
