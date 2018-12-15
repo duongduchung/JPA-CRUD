@@ -2,40 +2,53 @@ package com.howtodoinjava.demo.controller;
 
 import java.util.List;
 
+import com.howtodoinjava.demo.model.EmployeeEntity;
+import com.howtodoinjava.demo.service.EmployeeService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.howtodoinjava.demo.model.EmployeeEntity;
-import com.howtodoinjava.demo.service.EmployeeManager;
-
-@Controller
+@RestController
 @RequestMapping("/")
-public class EmployeeController
-{
+public class EmployeeController {
     @Autowired
-    EmployeeManager manager;
-     
-  /**
-     * Method will be called in initial page load at GET /employee-module
-     * */
-    @RequestMapping(value="/home", method = RequestMethod.GET)
-    public ModelAndView setupForm() 
-    {
-    	 List<EmployeeEntity> employees = manager.getAllEmployees();
-    	 for (EmployeeEntity employ : employees) {
-    		 System.out.println("First Name " + employ.getFirstName() + " Last Name " + employ.getLastName());
-    	 }
-    	//model.addObject("allEmployees",employees);
-    	 ModelAndView model = new ModelAndView("listEmployeeView");
- 		 model.addObject("lists", employees);
+    private EmployeeService employeeService;
 
- 		return model;
-       // return "listEmployeeView";
+    @RequestMapping(value = "/employees", method = RequestMethod.GET, 
+                    produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<EmployeeEntity>> getAll() {
+    	return new ResponseEntity<List<EmployeeEntity>>(employeeService.getAll(), HttpStatus.OK);
+    }  
+
+    @RequestMapping(value = "/employee/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> get(@PathVariable(value = "id") Integer id) {
+    	return new ResponseEntity<EmployeeEntity>(employeeService.get(id), HttpStatus.OK);
     }
- 
-   
+
+    @RequestMapping(value = "/employee", method = RequestMethod.POST, 
+                    produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> create(@RequestBody EmployeeEntity todoEntity) {
+    	return new ResponseEntity<EmployeeEntity>(employeeService.create(todoEntity), HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/employee/{id}", method = RequestMethod.PUT, 
+                    produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> update(@PathVariable(value = "id") Integer id,
+    								@RequestBody EmployeeEntity todoEntity) {
+    	return new ResponseEntity<EmployeeEntity>(employeeService.update(id, todoEntity), HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/employee/{id}", method = RequestMethod.DELETE, 
+                    produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> delete(@PathVariable(value = "id") Integer id) {
+    	employeeService.delete(id);
+    	return new ResponseEntity<Void>(HttpStatus.OK);
+    }
 }
